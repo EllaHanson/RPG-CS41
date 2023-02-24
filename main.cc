@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include "actor.h"
 #include <memory>
+#include <algorithm>
 
 const int MAX_FPS = 90; //Cap frame rate 
 const unsigned int TIMEOUT = 10; //Milliseconds to wait for a getch to finish
@@ -33,13 +34,20 @@ void turn_off_ncurses() {
     if (system("clear")) {}
 }
 
+//ADDED FUNCTION ********************** 
+bool sortTheVec(const shared_ptr<Actor> &lhs, const shared_ptr<Actor> &rhs) {
+    return lhs->GetSpeed() < rhs->GetSpeed();
+}
+//END ADDED FUNCRTION***********************
+
+
 int main() {
     turn_on_ncurses(); //DON'T DO CIN or COUT WHEN NCURSES MODE IS ON
     Map map;
     int x = Map::SIZE / 2, y = Map::SIZE / 2; //Start in middle of the world
     int old_x = -1, old_y = -1;
     
-    //MY CODE START ********************************************************************
+    //MY CODE **********************************************
     
     turn_off_ncurses();
     
@@ -50,10 +58,10 @@ int main() {
     int tempMoney = 0;
     
     vector<shared_ptr<Actor>> vec;
-
+    
     Actor actorChar;
     bool actorTaken = false;
-    Hero heroChar;
+    Hero heroChar; 
     bool heroTaken = false;
     Tiefling tieChar;
     bool tieflingTaken = false;
@@ -61,17 +69,17 @@ int main() {
     bool elfTaken = false;
     Gnome gnomeChar;
     bool gnomeTaken = false;
-
+    
     while (true) {
-
+        
         if(actorTaken && heroTaken && tieflingTaken && elfTaken && gnomeTaken) {
             cout << "All types taken!! Let's begin" << endl;
             break;
         }
-
+        
         cout << "Adding a new player? Pick a type " << endl;
         cout << "Available Types: ";
-
+        
         if (!actorTaken) cout << "Actor, ";
         if (!heroTaken) cout << "Hero, ";
         if (!tieflingTaken) cout << "Tiefling, ";
@@ -79,24 +87,24 @@ int main() {
         if (!gnomeTaken) cout << "Gnome";
         
         cout << endl;
-
+        
         cout << "--or if 'done' type done--" << endl;
         cin >> tempType;
-
+        
         count++;
-
+        
         for (int i = 0; i < tempType.size(); i++) {
             tempType.at(i) = toupper(tempType.at(i));
         }
-
+        
         if (tempType == "DONE") break;
-
+        
         if (tempType != "TIEFLING" && tempType != "ELF" && tempType != "GNOME"
                 && tempType != "ACTOR" && tempType != "HERO"){
             cout << "Enter Valid Type!!" << endl;
             continue;
         }
-
+        
         if((tempType == "ACTOR" && actorTaken) || (tempType == "HERO" && heroTaken) ||
                 (tempType == "TIEFLING" && tieflingTaken) || (tempType == "ELF" && elfTaken) ||
                 (tempType == "GNOME" && gnomeTaken) ) {
@@ -104,96 +112,110 @@ int main() {
             count--;
             continue;
         }
-
+         
          cout << "Enter Character " << count << " name: ";
          cin >> tempCharName;
-
+         
          cout << "Enter Character " << count << " speed: ";
          cin >> tempSpeed;
-
+        
         if (tempType == "ACTOR") {
-
+            
             actorChar.SetName(tempCharName);
             actorChar.SetSpeed(tempSpeed);
-
+            
             vec.push_back(make_shared<Actor>(actorChar));
-
+            
             actorTaken = true;
-
+        
         }
         else if (tempType == "HERO") {
-
+            
             heroChar.SetName(tempCharName);
             heroChar.SetSpeed(tempSpeed);
-
+            
             cout << "Enter amount of Character " << count << " money: ";
             cin >> tempMoney;
             heroChar.AddMoney(tempMoney);
-
+            
             vec.push_back(make_shared<Hero>(heroChar));
-
+            
             heroTaken = true;
         }
         else if (tempType == "TIEFLING") {
-
+            
             tieChar.SetName(tempCharName);
             tieChar.SetSpeed(tempSpeed);
-
+            
             cout << "Enter amount of Character " << count << " money: ";
             cin >> tempMoney;
             tieChar.AddMoney(tempMoney);
-
+            
             int fireDamage = 0;
             cout << "Enter fire damage: ";
             cin >> fireDamage;
             tieChar.SetFire(fireDamage);
-
+            
             vec.push_back(make_shared<Tiefling>(tieChar));
-
+            
             tieflingTaken = true;
         }
         else if(tempType == "ELF") {
-
+            
             elfChar.SetName(tempCharName);
             elfChar.SetSpeed(tempSpeed);
-
+            
             cout << "Enter amount of Character " << count << " money: ";
             cin >> tempMoney;
             elfChar.AddMoney(tempMoney);
-
+            
             char magic;
             cout << "Is this character magic (y or n): ";
             cin >> magic;
             if(magic == 'y') {
                 elfChar.SetIsMagic(true);
             }
-
+            
+            vec.push_back(make_shared<Elf>(elfChar));
+            
             elfTaken = true;
         }
         else if(tempType == "GNOME") {
-
+            
             gnomeChar.SetName(tempCharName);
             gnomeChar.SetSpeed(tempSpeed);
-
+            
             cout << "Enter amount of Character " << count << " money: ";
             cin >> tempMoney;
             gnomeChar.AddMoney(tempMoney);
-
+            
             char tools;
             cout << "Does this character have tools? (y or n): ";
             cin >> tools;
             if (tools == y) {
                 gnomeChar.SetHasTools(true);
             }
+            
+            vec.push_back(make_shared<Gnome>(gnomeChar));
+            
             gnomeTaken = true;
+            
         }
 
         cout << endl;
     }
 
+    sort(vec.rbegin(), vec.rend(), sortTheVec);
+
+    /*
+    for (const auto &a : vec) {
+        cout << a->GetName() << ": " << a->GetSpeed()<< endl;
+    }
+    */
+
     turn_on_ncurses();
 
-    //END MY CODE ********************************************************
+    //END MY CODE **********************************************************************
 
     while (true) {
         int ch = getch(); // Wait for user input, with TIMEOUT delay
