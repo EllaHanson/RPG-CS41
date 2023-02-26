@@ -51,7 +51,7 @@ int main() {
     
     turn_off_ncurses();
     
-    string tempCharName;
+     string tempCharName;
     int tempSpeed;
     string tempType;
     int count = 0;
@@ -59,10 +59,6 @@ int main() {
     
     vector<shared_ptr<Actor>> vec;
     
-    Actor actorChar;
-    bool actorTaken = false;
-    Hero heroChar; 
-    bool heroTaken = false;
     Tiefling tieChar;
     bool tieflingTaken = false;
     Elf elfChar;
@@ -72,7 +68,7 @@ int main() {
     
     while (true) {
         
-        if(actorTaken && heroTaken && tieflingTaken && elfTaken && gnomeTaken) {
+        if(tieflingTaken && elfTaken && gnomeTaken) {
             cout << "All types taken!! Let's begin" << endl;
             break;
         }
@@ -80,8 +76,6 @@ int main() {
         cout << "Adding a new player? Pick a type " << endl;
         cout << "Available Types: ";
         
-        if (!actorTaken) cout << "Actor, ";
-        if (!heroTaken) cout << "Hero, ";
         if (!tieflingTaken) cout << "Tiefling, ";
         if (!elfTaken) cout << "Elf, ";
         if (!gnomeTaken) cout << "Gnome";
@@ -99,14 +93,12 @@ int main() {
         
         if (tempType == "DONE") break;
         
-        if (tempType != "TIEFLING" && tempType != "ELF" && tempType != "GNOME"
-                && tempType != "ACTOR" && tempType != "HERO"){
+        if (tempType != "TIEFLING" && tempType != "ELF" && tempType != "GNOME" ){
             cout << "Enter Valid Type!!" << endl;
             continue;
         }
         
-        if((tempType == "ACTOR" && actorTaken) || (tempType == "HERO" && heroTaken) ||
-                (tempType == "TIEFLING" && tieflingTaken) || (tempType == "ELF" && elfTaken) ||
+        if( (tempType == "TIEFLING" && tieflingTaken) || (tempType == "ELF" && elfTaken) ||
                 (tempType == "GNOME" && gnomeTaken) ) {
             cout << "*Type already taken! Pick another*\n" << endl;
             count--;
@@ -119,37 +111,10 @@ int main() {
          cout << "Enter Character " << count << " speed: ";
          cin >> tempSpeed;
         
-        if (tempType == "ACTOR") {
-            
-            actorChar.SetName(tempCharName);
-            actorChar.SetSpeed(tempSpeed);
-            
-            vec.push_back(make_shared<Actor>(actorChar));
-            
-            actorTaken = true;
-        
-        }
-        else if (tempType == "HERO") {
-            
-            heroChar.SetName(tempCharName);
-            heroChar.SetSpeed(tempSpeed);
-            
-            cout << "Enter amount of Character " << count << " money: ";
-            cin >> tempMoney;
-            heroChar.AddMoney(tempMoney);
-            
-            vec.push_back(make_shared<Hero>(heroChar));
-            
-            heroTaken = true;
-        }
-        else if (tempType == "TIEFLING") {
+         if (tempType == "TIEFLING") {
             
             tieChar.SetName(tempCharName);
             tieChar.SetSpeed(tempSpeed);
-            
-            cout << "Enter amount of Character " << count << " money: ";
-            cin >> tempMoney;
-            tieChar.AddMoney(tempMoney);
             
             int fireDamage = 0;
             cout << "Enter fire damage: ";
@@ -161,52 +126,44 @@ int main() {
             tieflingTaken = true;
         }
         else if(tempType == "ELF") {
-            
+
             elfChar.SetName(tempCharName);
             elfChar.SetSpeed(tempSpeed);
-            
-            cout << "Enter amount of Character " << count << " money: ";
-            cin >> tempMoney;
-            elfChar.AddMoney(tempMoney);
-            
+
             char magic;
             cout << "Is this character magic (y or n): ";
             cin >> magic;
             if(magic == 'y') {
                 elfChar.SetIsMagic(true);
             }
-            
+
             vec.push_back(make_shared<Elf>(elfChar));
-            
+
             elfTaken = true;
         }
         else if(tempType == "GNOME") {
-            
+
             gnomeChar.SetName(tempCharName);
             gnomeChar.SetSpeed(tempSpeed);
-            
-            cout << "Enter amount of Character " << count << " money: ";
-            cin >> tempMoney;
-            gnomeChar.AddMoney(tempMoney);
-            
+
             char tools;
             cout << "Does this character have tools? (y or n): ";
             cin >> tools;
             if (tools == y) {
                 gnomeChar.SetHasTools(true);
             }
-            
+
             vec.push_back(make_shared<Gnome>(gnomeChar));
-            
+
             gnomeTaken = true;
-            
+
         }
 
         cout << endl;
     }
 
     sort(vec.rbegin(), vec.rend(), sortTheVec);
-
+    
     /*
     for (const auto &a : vec) {
         cout << a->GetName() << ": " << a->GetSpeed()<< endl;
