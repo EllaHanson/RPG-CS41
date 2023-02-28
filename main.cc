@@ -163,7 +163,11 @@ int main() {
     }
 
     sort(vec.rbegin(), vec.rend(), sortTheVec);
-    
+    //Ben added
+    CircularList<shared_ptr<Actor>> list;
+    for (const auto& actor : vec) {
+        list.push_back(actor);
+    }
     /*
     for (const auto &a : vec) {
         cout << a->GetName() << ": " << a->GetSpeed()<< endl;
@@ -220,6 +224,26 @@ int main() {
             mvprintw(Map::DISPLAY+1,0,"X: %i Y: %i\n",x,y);
             refresh();
         }
+        // added by Ben
+        if (map.get(x, y) == MAP::MONSTER) {
+            for (const auto &actor : list) {
+                cout << actor->GetName() << ": " << actor->GetSpeed() << endl;
+                if (actor->get_isDead()) {
+                    cout << actor->GetName() << " has died!" << endl;
+                    auto it = find(list.begin(), list.end(), actor);
+                    actor.erase(it);
+                    continue;
+                }
+                auto victim = MAP::MONSTER;
+                cout << actor->GetName() " attacks!" << endl;
+                victim->take_damage() ;
+                if (victim->get_isDead() == true) {
+                    cout << victim->getName() << " is dead!"
+                }
+                break;
+            }
+        }
+        // end Ben
         old_x = x;
         old_y = y;
         usleep(1'000'000/MAX_FPS);
