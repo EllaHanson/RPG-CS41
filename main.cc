@@ -163,6 +163,9 @@ int main() {
     }
 
     sort(vec.rbegin(), vec.rend(), sortTheVec);
+    
+    //ella code end
+    
     //Ben added
     CircularList<shared_ptr<Actor>> list;
     for (const auto& actor : vec) {
@@ -176,7 +179,7 @@ int main() {
 
     turn_on_ncurses();
 
-    //Ella Code end
+    
 
     while (true) {
         int ch = getch(); // Wait for user input, with TIMEOUT delay
