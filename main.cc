@@ -34,11 +34,11 @@ void turn_off_ncurses() {
     if (system("clear")) {}
 }
 
-//ADDED FUNCTION ********************** 
+//Ella function
 bool sortTheVec(const shared_ptr<Actor> &lhs, const shared_ptr<Actor> &rhs) {
     return lhs->GetSpeed() < rhs->GetSpeed();
 }
-//END ADDED FUNCRTION***********************
+//end Ella Function
 
 
 int main() {
@@ -47,7 +47,7 @@ int main() {
     int x = Map::SIZE / 2, y = Map::SIZE / 2; //Start in middle of the world
     int old_x = -1, old_y = -1;
     
-    //MY CODE **********************************************
+    //Ella code start
     
     turn_off_ncurses();
     
@@ -176,7 +176,7 @@ int main() {
 
     turn_on_ncurses();
 
-    //END MY CODE **********************************************************************
+    //Ella Code end
 
     while (true) {
         int ch = getch(); // Wait for user input, with TIMEOUT delay
