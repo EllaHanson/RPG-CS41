@@ -15,12 +15,12 @@ const int RIGHT = 67;
 void turn_on_ncurses() {
     initscr();//Start curses mode
     start_color(); //Enable Colors if possible
-    init_pair(1,COLOR_WHITE,COLOR_BLACK); //Set up some color pairs
-    init_pair(2,COLOR_CYAN,COLOR_BLACK);
-    init_pair(3,COLOR_GREEN,COLOR_BLACK);
-    init_pair(4,COLOR_YELLOW,COLOR_BLACK);
-    init_pair(5,COLOR_RED,COLOR_BLACK);
-    init_pair(6,COLOR_MAGENTA,COLOR_BLACK);
+    init_pair(1, COLOR_WHITE, COLOR_BLACK); //Set up some color pairs
+    init_pair(2, COLOR_CYAN, COLOR_BLACK);
+    init_pair(3, COLOR_GREEN, COLOR_BLACK);
+    init_pair(4, COLOR_YELLOW, COLOR_BLACK);
+    init_pair(5, COLOR_RED, COLOR_BLACK);
+    init_pair(6, COLOR_MAGENTA, COLOR_BLACK);
     clear();
     noecho();
     cbreak();
@@ -35,97 +35,111 @@ void turn_off_ncurses() {
 }
 
 //Ella function
-bool sortTheVec(const shared_ptr<Actor> &lhs, const shared_ptr<Actor> &rhs) {
+bool sortTheVec(const shared_ptr<Actor>& lhs, const shared_ptr<Actor>& rhs) {
     return lhs->GetSpeed() < rhs->GetSpeed();
 }
 //end Ella Function
 
 
 int main() {
-    turn_on_ncurses(); //DON'T DO CIN or COUT WHEN NCURSES MODE IS ON
+    
     Map map;
     int x = Map::SIZE / 2, y = Map::SIZE / 2; //Start in middle of the world
     int old_x = -1, old_y = -1;
-    
+
+    //conner
+    cout << "Load a previous map? Y/N" << endl;
+    char inp;
+    cin >> inp;
+    if (inp == 'Y' or inp == 'y') {
+        string filename;
+        cout << "Please enter a filename to load" << endl;
+        cin >> filename;
+        map.load(filename);
+    }
+    else map.init_map();
+    turn_on_ncurses(); //moved this from the top to under the loading
+    //end
+
     //Ella code start
-    
+
     turn_off_ncurses();
-    
-     string tempCharName;
+
+    string tempCharName;
     int tempSpeed;
     string tempType;
     int count = 0;
     int tempMoney = 0;
-    
+
     vector<shared_ptr<Actor>> vec;
-    
+
     Tiefling tieChar;
     bool tieflingTaken = false;
     Elf elfChar;
     bool elfTaken = false;
     Gnome gnomeChar;
     bool gnomeTaken = false;
-    
+
     while (true) {
-        
-        if(tieflingTaken && elfTaken && gnomeTaken) {
+
+        if (tieflingTaken && elfTaken && gnomeTaken) {
             cout << "All types taken!! Let's begin" << endl;
             break;
         }
-        
+
         cout << "Adding a new player? Pick a type " << endl;
         cout << "Available Types: ";
-        
+
         if (!tieflingTaken) cout << "Tiefling, ";
         if (!elfTaken) cout << "Elf, ";
         if (!gnomeTaken) cout << "Gnome";
-        
+
         cout << endl;
-        
+
         cout << "--or if 'done' type done--" << endl;
         cin >> tempType;
-        
+
         count++;
-        
+
         for (int i = 0; i < tempType.size(); i++) {
             tempType.at(i) = toupper(tempType.at(i));
         }
-        
+
         if (tempType == "DONE") break;
-        
-        if (tempType != "TIEFLING" && tempType != "ELF" && tempType != "GNOME" ){
+
+        if (tempType != "TIEFLING" && tempType != "ELF" && tempType != "GNOME") {
             cout << "Enter Valid Type!!" << endl;
             continue;
         }
-        
-        if( (tempType == "TIEFLING" && tieflingTaken) || (tempType == "ELF" && elfTaken) ||
-                (tempType == "GNOME" && gnomeTaken) ) {
+
+        if ((tempType == "TIEFLING" && tieflingTaken) || (tempType == "ELF" && elfTaken) ||
+            (tempType == "GNOME" && gnomeTaken)) {
             cout << "*Type already taken! Pick another*\n" << endl;
             count--;
             continue;
         }
-         
-         cout << "Enter Character " << count << " name: ";
-         cin >> tempCharName;
-         
-         cout << "Enter Character " << count << " speed: ";
-         cin >> tempSpeed;
-        
-         if (tempType == "TIEFLING") {
-            
+
+        cout << "Enter Character " << count << " name: ";
+        cin >> tempCharName;
+
+        cout << "Enter Character " << count << " speed: ";
+        cin >> tempSpeed;
+
+        if (tempType == "TIEFLING") {
+
             tieChar.SetName(tempCharName);
             tieChar.SetSpeed(tempSpeed);
-            
+
             int fireDamage = 0;
             cout << "Enter fire damage: ";
             cin >> fireDamage;
             tieChar.SetFire(fireDamage);
-            
+
             vec.push_back(make_shared<Tiefling>(tieChar));
-            
+
             tieflingTaken = true;
         }
-        else if(tempType == "ELF") {
+        else if (tempType == "ELF") {
 
             elfChar.SetName(tempCharName);
             elfChar.SetSpeed(tempSpeed);
@@ -133,7 +147,7 @@ int main() {
             char magic;
             cout << "Is this character magic (y or n): ";
             cin >> magic;
-            if(magic == 'y') {
+            if (magic == 'y') {
                 elfChar.SetIsMagic(true);
             }
 
@@ -141,7 +155,7 @@ int main() {
 
             elfTaken = true;
         }
-        else if(tempType == "GNOME") {
+        else if (tempType == "GNOME") {
 
             gnomeChar.SetName(tempCharName);
             gnomeChar.SetSpeed(tempSpeed);
@@ -163,9 +177,9 @@ int main() {
     }
 
     sort(vec.rbegin(), vec.rend(), sortTheVec);
-    
+
     //ella code end
-    
+
     //Ben added
     CircularList<shared_ptr<Actor>> list;
     for (const auto& actor : vec) {
@@ -179,7 +193,7 @@ int main() {
 
     turn_on_ncurses();
 
-    
+
 
     while (true) {
         int ch = getch(); // Wait for user input, with TIMEOUT delay
@@ -213,7 +227,7 @@ int main() {
         }
         //Stop flickering by only redrawing on a change
         if (x != old_x or y != old_y) {
-            /* Do something like this, idk 
+            /* Do something like this, idk
             if (map.get(x,y) == Map::TREASURE) {
                 map.set(x,y,Map::OPEN);
                 money++;
@@ -223,13 +237,13 @@ int main() {
             }
             */
             //clear(); //Put this in if the screen is getting corrupted
-            map.draw(x,y);
-            mvprintw(Map::DISPLAY+1,0,"X: %i Y: %i\n",x,y);
+            map.draw(x, y);
+            mvprintw(Map::DISPLAY + 1, 0, "X: %i Y: %i\n", x, y);
             refresh();
         }
         // added by Ben
         if (map.get(x, y) == MAP::MONSTER) {
-            for (const auto &actor : list) {
+            for (const auto& actor : list) {
                 cout << actor->GetName() << ": " << actor->GetSpeed() << endl;
                 if (actor->get_isDead()) {
                     cout << actor->GetName() << " has died!" << endl;
@@ -239,7 +253,7 @@ int main() {
                 }
                 auto victim = MAP::MONSTER;
                 cout << actor->GetName() " attacks!" << endl;
-                victim->take_damage() ;
+                victim->take_damage();
                 if (victim->get_isDead() == true) {
                     cout << victim->getName() << " is dead!"
                 }
@@ -249,8 +263,19 @@ int main() {
         // end Ben
         old_x = x;
         old_y = y;
-        usleep(1'000'000/MAX_FPS);
+        usleep(1'000'000 / MAX_FPS);
     }
     turn_off_ncurses();
+    //conner
+    cout << "Save? Y/N" << endl; //this should work by being at the bottom
+    cin >> inp;
+    if (inp == 'Y') {
+        cout << "Enter Save Name" << endl;
+        string Savename;
+        cin >> Savename;
+        map.save(map, Savename);
+    }
+    else if (inp == 'N') exit(0);
+    //end
 
 }
